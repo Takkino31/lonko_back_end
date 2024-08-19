@@ -1,5 +1,8 @@
 package takkino.learning.lonko.entities;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +13,14 @@ public class User {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
+
     private String firstName, lastName, username, email, password;
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+
+    public User() {
+        // Constructeur sans argument nécessaire pour JPA
+    }
 
     public User(String firstName, String lastName, String username, String email) {
   
@@ -18,10 +28,12 @@ public class User {
         this.lastName = lastName;
         this.username = username;
         this.email = email;
-        this.password = "password";
+        this.password = encodePassword("password");
     }
 
-
+    public static String encodePassword(String password) {
+            return passwordEncoder.encode(password);
+    }
     
     public Long getId() {
         return id;
@@ -57,7 +69,10 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = passwordEncoder.encode(password);
+        System.err.println("________________________________");
+        System.out.println("le mot de passe est --- "+ this.password);
+        System.err.println("________________________________");
     }
 
     public String getUsername() {
